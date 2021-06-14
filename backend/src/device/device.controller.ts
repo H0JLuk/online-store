@@ -33,7 +33,7 @@ export class DeviceController {
   }
 
   @Get()
-  getAll(@Query() queries: GetAllDevicesQueries): Promise<any[]> {
+  getAll(@Query() queries: GetAllDevicesQueries): Promise<{ rows: Device[]; count: number }> {
     return this.deviceService.getAll(queries);
   }
 

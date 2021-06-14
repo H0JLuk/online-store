@@ -1,8 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindManyOptions, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { CreateBrandDto } from './dto/create-brand.dto';
-import { GetAllBrandsQueries } from './dto/get-all-brands';
 import { Brand } from './models/brand';
 
 @Injectable()
@@ -14,8 +13,8 @@ export class BrandService {
 
   async create(dto: CreateBrandDto): Promise<Brand> {
     try {
-      const { name } = dto;
-      const brand = await this.brandsRepository.save({ name });
+      const { name, types } = dto;
+      const brand = await this.brandsRepository.save({ name, types: this.formatJoinData(types) });
       return brand;
     } catch (e) {
       if (e.code === 'ER_DUP_ENTRY') {
@@ -25,13 +24,23 @@ export class BrandService {
     }
   }
 
-  async getAll(queries: GetAllBrandsQueries): Promise<Brand[]> {
-    const where: FindManyOptions<Brand>['where'] = {};
-    const { page, limit, typeId } = queries;
+  async getAll(typeId: number): Promise<Brand[]> {
+    let brands;
 
-    typeId && (where.types = [typeId]);
+    if (Number.isNaN(typeId)) {
+      brands = await this.brandsRepository.find();
+    } else {
+      const query = this.brandsRepository
+        .createQueryBuilder('brand')
+        .leftJoin('brand.types', 'type')
+        .where('type.id = :typeId', { typeId });
+      brands = await query.getMany();
+    }
 
-    const brands = await this.brandsRepository.find({ where: { types } });
     return brands;
+  }
+
+  private formatJoinData(ids: number[]): { id: number }[] {
+    return ids.map((id) => ({ id }));
   }
 }

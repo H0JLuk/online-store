@@ -4,7 +4,6 @@ import { Roles } from 'src/role/roles.decorator';
 import { RolesGuard } from 'src/role/roles.guard';
 import { BrandService } from './brand.service';
 import { CreateBrandDto } from './dto/create-brand.dto';
-import { GetAllBrandsQueries } from './dto/get-all-brands'
 import { Brand } from './models/brand';
 
 @ApiTags('brand')
@@ -24,7 +23,7 @@ export class BrandController {
   @ApiOperation({ summary: 'Getting all brands' })
   @ApiResponse({ status: HttpStatus.OK, type: [Brand] })
   @Get()
-  getAll(@Query() queries: GetAllBrandsQueries): Promise<Brand[]> {
-    return this.brandService.getAll(queries);
+  getAll(@Query('typeId') typeId: string): Promise<Brand[]> {
+    return this.brandService.getAll(+typeId);
   }
 }

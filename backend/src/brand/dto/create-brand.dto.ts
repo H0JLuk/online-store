@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, MaxLength, MinLength } from 'class-validator';
+import { IsArray, IsString, MaxLength, MinLength } from 'class-validator';
 
 export class CreateBrandDto {
   @ApiProperty({ minLength: 4, maxLength: 20, example: 'Apple' })
@@ -7,4 +7,8 @@ export class CreateBrandDto {
   @MinLength(4)
   @MaxLength(20)
   readonly name: string;
+
+  @ApiProperty({})
+  @IsArray()
+  readonly types: number[];
 }

@@ -56,7 +56,7 @@ export class DeviceService {
     return device;
   }
 
-  async getAll(queries: GetAllDevicesQueries): Promise<Device[]> {
+  async getAll(queries: GetAllDevicesQueries): Promise<{ rows: Device[]; count: number }> {
     const { limit = 9, page = 1, brandId, typeId } = queries;
     const offset = (page - 1) * limit;
     const where: FindManyOptions<Device>['where'] = {};
@@ -64,13 +64,13 @@ export class DeviceService {
     brandId && (where.brandId = brandId);
     typeId && (where.typeId = typeId);
 
-    const devices = await this.devicesRepository.find({
+    const [devices, count] = await this.devicesRepository.findAndCount({
       where,
       skip: offset,
       take: limit,
       relations: ['devicesInfo', 'brand', 'type'],
     });
-    return devices;
+    return { rows: devices, count };
   }
 
   async delete(id: number) {

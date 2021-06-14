@@ -22,6 +22,11 @@ export class Brand {
   @OneToMany(() => Device, (device) => device.brand)
   devices: Device[];
 
-  @ManyToMany(() => Type)
+  @ManyToMany(() => Type, { cascade: true })
+  @JoinTable({
+    name: 'brands_types',
+    joinColumn: { name: 'brandId', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'typeId', referencedColumnName: 'id' },
+  })
   types: Type[];
 }
