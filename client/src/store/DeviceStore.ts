@@ -5,6 +5,7 @@ class DeviceStore {
   private _devices: IDevice[] = []
   private _currentDevice: IDevice | null = null
   private _loading = false
+  
   private _page = 1
   private _totalDevices = 0
   private _limit = 3

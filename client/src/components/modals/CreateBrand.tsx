@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import { Alert, Button, Form, Modal, Row } from 'react-bootstrap'
 import { createBrand } from '../../http/brandApi'
 import BrandStore from '../../store/BrandStore'
+import TypeStore from '../../store/TypeStore'
+import { IType } from '../../types/type'
 import { MODAL_ANIM_TIME } from '../../utils/consts'
 
 interface ICreateBrandProps {
@@ -18,13 +20,31 @@ export interface IAlert {
 
 const CreateBrand: React.FC<ICreateBrandProps> = ({ show, onHide }) => {
   const { addBrand } = BrandStore
-  const [value, setValue] = useState('')
+  const { types } = TypeStore
+  const [data, setData] = useState<{ name: string; types: IType[] }>({ name: '', types: [] })
   const [alertData, setAlertData] = useState<IAlert[]>([])
+
+  const handleChange = (key: 'name' | 'types') => (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (key === 'name') {
+      const { value } = e.target
+      setData({ ...data, [key]: value })
+    } else {
+      const typeId = +e.target.value
+      const isTypeExisting = data.types.find((type) => type.id === +typeId)
+      if (isTypeExisting) {
+        setData({ ...data, types: data.types.filter((i) => i.id !== typeId) })
+      } else {
+        const type = types.find((i) => i.id === typeId)
+        type && setData({ ...data, types: [...data.types, type] })
+      }
+    }
+  }
 
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault()
 
-    createBrand(value)
+    const types = data.types.map((i) => i.id)
+    createBrand(data.name, types)
       .then((brand) => {
         addBrand(brand)
         const alertId = Date.now()
@@ -75,8 +95,24 @@ const CreateBrand: React.FC<ICreateBrandProps> = ({ show, onHide }) => {
           <Modal.Body>
             <Form.Group className='mb-3'>
               <Form.Label>Brand name</Form.Label>
-              <Form.Control value={value} onChange={(e) => setValue(e.target.value)} placeholder='Enter brand name' />
+              <Form.Control value={data.name} onChange={handleChange('name')} placeholder='Enter brand name' />
             </Form.Group>
+            <Form.Group className='mb-3'>
+              <Form.Label>Brand types</Form.Label>
+              <Form.Control
+                as='select'
+                multiple
+                value={data.types.map((i) => String(i.id))}
+                onChange={handleChange('types')}
+              >
+                {types.map((type) => (
+                  <option key={type.id} value={String(type.id)}>
+                    {type.name}
+                  </option>
+                ))}
+              </Form.Control>
+            </Form.Group>
+
             <hr />
             <Row className='justify-content-end mr-0 ml-0'>
               <Button variant='outline-danger' onClick={onHide} className='mr-3'>

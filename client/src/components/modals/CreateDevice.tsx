@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react-lite'
-import React, { useEffect, useState } from 'react'
-import { Alert, Button, Col, Dropdown, Form, Image, Modal, Row } from 'react-bootstrap'
+import React, { useState } from 'react'
+import { Alert, Button, Col, Dropdown, Form, Modal, Row } from 'react-bootstrap'
 import { createDevice } from '../../http/deviceApi'
 import BrandStore from '../../store/BrandStore'
 import TypeStore from '../../store/TypeStore'

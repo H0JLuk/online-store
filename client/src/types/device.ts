@@ -16,4 +16,6 @@ export interface IDeviceInfo {
 export interface IDeviceReqQueries {
   typeId?: number
   brandId?: number
+  limit?: number
+  page?: number
 }

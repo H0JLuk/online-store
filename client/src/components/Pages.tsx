@@ -4,24 +4,17 @@ import { Pagination } from 'react-bootstrap'
 import DeviceStore from '../store/DeviceStore'
 
 function Pages() {
-  const { devices } = DeviceStore
+  const { setPage, totalDevices, limit, page: activePage } = DeviceStore
+  const pageCount = Math.ceil(totalDevices / limit)
+  const pages = new Array(pageCount).fill(0).map((_, idx) => idx + 1)
+
   return (
-    <Pagination>
-      <Pagination.First />
-      <Pagination.Prev />
-      <Pagination.Item>{1}</Pagination.Item>
-      <Pagination.Ellipsis />
-
-      <Pagination.Item>{10}</Pagination.Item>
-      <Pagination.Item>{11}</Pagination.Item>
-      <Pagination.Item active>{12}</Pagination.Item>
-      <Pagination.Item>{13}</Pagination.Item>
-      <Pagination.Item disabled>{14}</Pagination.Item>
-
-      <Pagination.Ellipsis />
-      <Pagination.Item>{20}</Pagination.Item>
-      <Pagination.Next />
-      <Pagination.Last />
+    <Pagination className='mt-5'>
+      {pages.map((page) => (
+        <Pagination.Item active={activePage === page} onClick={() => setPage(page)} key={page}>
+          {page}
+        </Pagination.Item>
+      ))}
     </Pagination>
   )
 }
